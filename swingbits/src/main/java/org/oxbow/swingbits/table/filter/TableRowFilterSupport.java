@@ -56,16 +56,26 @@ public final class TableRowFilterSupport {
 		this.filter = filter;
 	}
 
+	/**
+	 * Start with the JTable
+	 * @param table
+	 * @return
+	 */
 	public static TableRowFilterSupport forTable( JTable table ) {
 		return new TableRowFilterSupport(new JTableFilter(table));
 	}
 
+	/**
+	 * Start withe table filter
+	 * @param filter
+	 * @return
+	 */
 	public static TableRowFilterSupport forFilter( ITableFilter<?> filter ) {
 		return new TableRowFilterSupport(filter);
 	}
 
 	/**
-	 * Additional actions visible in column filter list
+	 * Sets column filter list additional actions visibility 
 	 * @param visible
 	 * @return
 	 */
@@ -75,7 +85,7 @@ public final class TableRowFilterSupport {
 	}
 
 	/**
-	 * Comlumn filter list is searchable
+	 * Makes column filter list searchable
 	 * @param serachable
 	 * @return
 	 */
@@ -84,16 +94,30 @@ public final class TableRowFilterSupport {
 		return this;
 	}
 
+	/**
+	 * Sets the optional string translator
+	 * @param translator
+	 * @return
+	 */
 	public TableRowFilterSupport searchTransalator( IObjectToStringTranslator translator ) {
 		this.translator = translator;
 		return this;
 	}
 
+	/**
+	 * Allow usage of table renderers in column filters 
+	 * @param value
+	 * @return
+	 */
 	public TableRowFilterSupport useTableRenderers( boolean value ) {
 		this.useTableRenderers = value;
 		return this;
 	}
 
+	/**
+	 * Enables table column filtering
+	 * @return
+	 */
 	public JTable apply() {
 
 		final TableFilterColumnPopup filterPopup = new TableFilterColumnPopup(filter);
