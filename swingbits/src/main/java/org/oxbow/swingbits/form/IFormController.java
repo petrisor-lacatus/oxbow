@@ -9,9 +9,6 @@ import javax.swing.JComponent;
 
 public interface IFormController<T extends Serializable> {
 
-	/**
-	 * Controller's Edit mode
-	 */
 	public enum Mode {
 		INSERT, UPDATE
 	}
