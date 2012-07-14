@@ -45,7 +45,8 @@ class TableFilterState implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	// no set - filter cleared; set - some kind of filtering
+	// if 'no set' - filter cleared
+	// if 'set' - some kind of filtering
 	private final Map<Integer,Set<DistinctColumnItem>> data = new HashMap<Integer,Set<DistinctColumnItem>>();
 	
 	/**

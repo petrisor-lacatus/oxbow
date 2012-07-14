@@ -60,7 +60,8 @@ import static org.oxbow.swingbits.util.CollectionUtils.*;
 @SuppressWarnings("serial")
 public abstract class AbstractTableFilter<T extends JTable> implements ITableFilter<T> {
 
-	private final Set<IFilterChangeListener> listeners = Collections.synchronizedSet( new HashSet<IFilterChangeListener>());
+	private final Set<IFilterChangeListener> listeners = 
+			Collections.synchronizedSet( new HashSet<IFilterChangeListener>());
 
 	private final Map<Integer, Collection<DistinctColumnItem>> distinctItemCache =
 		Collections.synchronizedMap(new HashMap<Integer, Collection<DistinctColumnItem>>());
@@ -80,9 +81,8 @@ public abstract class AbstractTableFilter<T extends JTable> implements ITableFil
 			public void propertyChange(PropertyChangeEvent e) {
 				clearDistinctItemCache();
 				TableModel model = (TableModel) e.getNewValue();
-				if ( model != null ) {
-					model.addTableModelListener( new TableModelListener() {
-
+				if (model != null) {
+					model.addTableModelListener(new TableModelListener() {
 						@Override
 						public void tableChanged(TableModelEvent e) {
 							clearDistinctItemCache();
@@ -120,7 +120,7 @@ public abstract class AbstractTableFilter<T extends JTable> implements ITableFil
 	}
 
 	@Override
-	public final void removeChnageListener( IFilterChangeListener listener ) {
+	public final void removeChangeListener( IFilterChangeListener listener ) {
 		if ( listener != null ) listeners.remove(listener);
 	}
 
