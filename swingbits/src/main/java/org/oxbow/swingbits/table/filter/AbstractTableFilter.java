@@ -76,23 +76,30 @@ public abstract class AbstractTableFilter<T extends JTable> implements ITableFil
 
 	private void setupDistinctItemCacheRefresh() {
 		clearDistinctItemCache();
-		this.table.addPropertyChangeListener("model", new PropertyChangeListener() {
+		listenForDataChange( table.getModel() );
+		listenForModelChange();
+	}
+
+	private void listenForModelChange() {
+		table.addPropertyChangeListener("model", new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				clearDistinctItemCache();
-				TableModel model = (TableModel) e.getNewValue();
-				if (model != null) {
-					model.addTableModelListener(new TableModelListener() {
-						@Override
-						public void tableChanged(TableModelEvent e) {
-							clearDistinctItemCache();
-						}
-					});
-				}
+				listenForDataChange( (TableModel) e.getNewValue() );
 			}
 		});
 	}
-
+	
+	private void listenForDataChange(TableModel model) {
+		if (model != null) {
+			model.addTableModelListener(new TableModelListener() {
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					clearDistinctItemCache();
+				}
+			});
+		}
+	}	
 
 	private void clearDistinctItemCache() {
 		distinctItemCache.clear();
