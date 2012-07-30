@@ -39,6 +39,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +75,12 @@ class TableFilterColumnPopup extends PopupWindow implements MouseListener {
 		static class ColumnAttrs {
 			public Dimension preferredSize;
 		}
+		
+		private static ITableFilterActionProvider emptyActionProvider = new ITableFilterActionProvider() {
+			   public Collection<? extends AbstractTableFilterAction> getActions( int column ) {
+				   return new ArrayList<AbstractTableFilterAction>();
+			   }
+	    };
 
 		private boolean enabled = false;
 
@@ -87,7 +94,9 @@ class TableFilterColumnPopup extends PopupWindow implements MouseListener {
 		private boolean searchable;
 		private IObjectToStringTranslator translator;
 		private boolean actionsVisible = true;
+		private ITableFilterActionProvider actionProvider = emptyActionProvider; 
 		private boolean useTableRenderers = false;
+
 
 		public TableFilterColumnPopup( ITableFilter<?> filter ) {
 
@@ -137,6 +146,10 @@ class TableFilterColumnPopup extends PopupWindow implements MouseListener {
 		
 		public void setActionsVisible(boolean actionsVisible) {
 			this.actionsVisible = actionsVisible;
+		}
+		
+		public void setActionProvider( ITableFilterActionProvider actionProvider ) {
+			this.actionProvider = actionProvider != null? actionProvider: emptyActionProvider;
 		}
 		
 		public void setUseTableRenderers(boolean reuseRenderers) {
@@ -258,7 +271,9 @@ class TableFilterColumnPopup extends PopupWindow implements MouseListener {
 	        Collection<DistinctColumnItem> distinctItems = filter.getDistinctColumnItems(mColumnIndex);
 
 	        DefaultCheckListModel<DistinctColumnItem> model = new DefaultCheckListModel<DistinctColumnItem>(distinctItems);
-			filterList.setModel( actionsVisible? new ActionCheckListModel<DistinctColumnItem>( model): model);
+			filterList.setModel( actionsVisible? 
+					new ActionCheckListModel<DistinctColumnItem>( model, actionProvider.getActions(mColumnIndex)): 
+				    model );
 	        Collection<DistinctColumnItem> checked = filter.getFilterState(mColumnIndex);
 	        
 	        // replace empty checked items with full selection

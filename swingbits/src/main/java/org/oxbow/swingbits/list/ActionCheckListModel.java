@@ -32,7 +32,6 @@
 package org.oxbow.swingbits.list;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,14 +50,22 @@ public class ActionCheckListModel<T> implements ICheckListModel<T> {
 	
 	private final ICheckListAction<T> actionCheckAll = new ICheckListAction.CheckAll<T>();
 	
-	@SuppressWarnings("unchecked")
-	private final List<ICheckListAction<T>> actionItems = Arrays.asList( actionCheckAll );
+	private final List<ICheckListAction<T>> actionItems = new ArrayList<ICheckListAction<T>>();
 	private final Set<ICheckListAction<T>> checks = new HashSet<ICheckListAction<T>>();
 	
-	public ActionCheckListModel( final ICheckListModel<T> originalModel ) {
+	public ActionCheckListModel( final ICheckListModel<T> originalModel) {
+		this( originalModel, null );
+	}
+	
+	public ActionCheckListModel( final ICheckListModel<T> originalModel, Collection<? extends ICheckListAction<T>> actions ) {
 		
 		if ( originalModel == null ) throw new NullPointerException();
 		this.originalModel = originalModel;
+	
+		if ( actions != null ) {
+			actionItems.addAll(actions);
+		}
+		actionItems.add(actionCheckAll);
 		
 		//react on original model changes
 		this.originalModel.addListDataListener( new ListDataListener () {

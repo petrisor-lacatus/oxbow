@@ -34,6 +34,9 @@ package org.oxbow.swingbits.table.filter;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -79,9 +82,48 @@ public class TableFilterTest implements Runnable {
 		f.setVisible(true);
 		
 	}
+
+	
+	static class DummyTableFilterAction extends AbstractTableFilterAction {
+
+		public DummyTableFilterAction( String name ) {
+			super(name);
+		}
+		
+	};
+	
+	private ITableFilterActionProvider actionProvider = new ITableFilterActionProvider() {
+		
+		private Collection<? extends AbstractTableFilterAction> actions0 = Arrays.asList(
+				new DummyTableFilterAction("Action A 1"),
+				new DummyTableFilterAction("Action B 1")	); 
+
+		private Collection<? extends AbstractTableFilterAction> actions1 = Arrays.asList(
+				new DummyTableFilterAction("Action A 2"));
+		
+		
+		@Override
+		public Collection<? extends AbstractTableFilterAction> getActions(int column) {
+			switch ( column ) {
+			  case 0: return actions0;
+			  case 1: return actions1;
+			  default: return Collections.emptyList();
+			}
+		}
+		
+	};
+	
 	
 	private JTable buildTable() {
-		JTable table = TableRowFilterSupport.forTable(new JTable()).actions(true).searchable(true).useTableRenderers(true).apply();
+		JTable table = TableRowFilterSupport
+				           .forTable(new JTable())
+				           .actions(true)
+				           .actionProvider(actionProvider)
+				           .searchable(true)
+				           .useTableRenderers(true)
+				           .apply();
+		
+		
 		table.setModel( new DefaultTableModel(data, colNames) );
 		table.getColumnModel().getColumn(0).setCellRenderer(new TestRenderer());
 		return table;

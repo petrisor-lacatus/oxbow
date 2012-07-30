@@ -49,6 +49,7 @@ public final class TableRowFilterSupport {
 	private final ITableFilter<?> filter;
 	private boolean actionsVisible = true;
 	private boolean useTableRenderers = false;
+	private ITableFilterActionProvider actionProvider;
 
 	private TableRowFilterSupport( ITableFilter<?> filter ) {
 		if ( filter == null ) throw new NullPointerException();
@@ -83,6 +84,12 @@ public final class TableRowFilterSupport {
 		this.actionsVisible = visible;
 		return this;
 	}
+	
+	public TableRowFilterSupport actionProvider( ITableFilterActionProvider actionProvider ) {
+		this.actionProvider = actionProvider;
+		return this;
+	}
+	
 
 	/**
 	 * Makes column filter list searchable
@@ -123,6 +130,7 @@ public final class TableRowFilterSupport {
 		final TableFilterColumnPopup filterPopup = new TableFilterColumnPopup(filter);
 		filterPopup.setEnabled(true);
 		filterPopup.setActionsVisible(actionsVisible);
+		filterPopup.setActionProvider(actionProvider);
 		filterPopup.setSearchable(searchable);
 		filterPopup.setSearchTranslator(translator);
 		filterPopup.setUseTableRenderers( useTableRenderers );
