@@ -36,10 +36,9 @@ import static org.oxbow.swingbits.util.CollectionUtils.isEmpty;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+
+import org.oxbow.swingbits.util.SetMap;
 
 class TableFilterState implements Serializable {
 
@@ -47,13 +46,18 @@ class TableFilterState implements Serializable {
 	
 	// if 'no set' - filter cleared
 	// if 'set' - some kind of filtering
-	private final Map<Integer,Set<DistinctColumnItem>> data = new HashMap<Integer,Set<DistinctColumnItem>>();
+	private final SetMap<Integer,DistinctColumnItem> dataMap = 
+			           new SetMap<Integer,DistinctColumnItem>();
+	
+	private final SetMap<Integer,AbstractTableFilterAction> actionMap = 
+			           new SetMap<Integer,AbstractTableFilterAction>();
 	
 	/**
 	 * Clears filtering for specific column
 	 */
 	public void clear( int column ) {
-		data.remove(column);
+		dataMap.remove(column);
+		actionMap.remove(column);
 	}
 	
 	
@@ -61,37 +65,10 @@ class TableFilterState implements Serializable {
 	 * Clears all filtering
 	 */
 	public void clear() {
-		data.clear();
-	}
-	
-	private Set<DistinctColumnItem> prepareValueSet( int column ) {
-		Set<DistinctColumnItem> vals =  data.get(column);
-		if ( vals == null ) {
-			vals = new HashSet<DistinctColumnItem>();
-			data.put(column, vals);
-		}
-		return vals;
-	}
-	
-	
-	/**
-	 * Adds filter value for specified column 
-	 * @param column
-	 * @param value
-	 */
-	public void addValue( int column, DistinctColumnItem value ) {
-		prepareValueSet(column).add(value);
+		dataMap.clear();
+		actionMap.clear();
 	}
 
-	
-	/**
-	 * Adds a collection of filter values for specified column 
-	 * @param column
-	 * @param values
-	 */
-	public void addValues( int column, Collection<DistinctColumnItem> values ) {
-		prepareValueSet(column).addAll(values);
-	}
 
 	/**
 	 * Resets a collection of filter values for specified column
@@ -99,16 +76,24 @@ class TableFilterState implements Serializable {
 	 * @param values
 	 */
 	public void setValues( int column, Collection<DistinctColumnItem> values ) {
-		data.remove(column);
-		if ( !isEmpty(values)) {
-			prepareValueSet(column).addAll(values);
-		}
+		dataMap.addAll(column, values);
 	}
 	
+	public void setActions( int column, Collection<AbstractTableFilterAction> actions ) {
+		actionMap.addAll(column,actions);
+	}
+	
+	
 	public Collection<DistinctColumnItem> getValues( int column ) {
-		Set<DistinctColumnItem> vals =  data.get(column);
+		Set<DistinctColumnItem> vals =  dataMap.get(column);
 		return vals == null? Collections.<DistinctColumnItem>emptySet(): vals;
 	}
+	
+	
+	public Collection<AbstractTableFilterAction> getActions( int column ) {
+		Set<AbstractTableFilterAction> actions =  actionMap.get(column);
+		return actions == null? Collections.<AbstractTableFilterAction>emptySet(): actions;
+	}	
 	
 	/**
 	 * Standard test for row inclusion using current filter values

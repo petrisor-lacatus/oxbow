@@ -272,7 +272,9 @@ class TableFilterColumnPopup extends PopupWindow implements MouseListener {
 
 	        DefaultCheckListModel<DistinctColumnItem> model = new DefaultCheckListModel<DistinctColumnItem>(distinctItems);
 			filterList.setModel( actionsVisible? 
-					new ActionCheckListModel<DistinctColumnItem>( model, actionProvider.getActions(mColumnIndex)): 
+					// action are visible - create special model
+					new ActionCheckListModel<DistinctColumnItem>( model, actionProvider.getActions(mColumnIndex)):
+					// actions are invisible	
 				    model );
 	        Collection<DistinctColumnItem> checked = filter.getFilterState(mColumnIndex);
 	        
