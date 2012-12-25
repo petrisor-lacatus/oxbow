@@ -29,30 +29,38 @@
  *
  */
 
+package org.oxbow.swingbits.dialog.task.design;
 
-package org.oxbow.swingbits.util;
+import java.awt.Color;
+import java.awt.Font;
 
-public class Preconditions {
+import javax.swing.UIManager;
 
-	private Preconditions(){}
-	
-	public static void checkArgument(boolean expression) {
-	    if (!expression) throw new IllegalArgumentException();
-    }
-	
-	public static void checkArgument(boolean expression, String message ) {
-	    if (!expression) throw new IllegalArgumentException( String.valueOf(message));
-    }
-	
-	public static <T> T checkNotNull(T ref) {
-		if (ref == null) throw new NullPointerException();
-		return ref;
+import org.oxbow.swingbits.dialog.task.ICommandLinkPainter;
+
+public class WindowsContentDesign extends DefaultContentDesign {
+
+	@Override
+	public void updateUIDefaults() {
+
+		super.updateUIDefaults();
+
+		UIManager.put( COLOR_INSTRUCTION_FOREGROUND, new Color(0x0033A0)); 
+
+		Font fontBase =  new Font("Segoe UI", 0, 11);
+		UIManager.put( FONT_INSTRUCTION, 
+			fontBase.deriveFont( fontBase.getStyle(), fontBase.getSize2D() * 1.4f ) );
+		
 	}
-
-	public static <T> T checkNotNull(T ref, String message ) {
-		if (ref == null) throw new NullPointerException(String.valueOf(message));
-		return ref;
-	}
+	
+	
+	@Override
+	public ICommandLinkPainter getCommandLinkPainter() {
+		if (commandButtonPainter == null) {
+			commandButtonPainter = new WindowsCommandLinkPainter();
+		}
+		return commandButtonPainter;
+	}	
 	
 	
 }

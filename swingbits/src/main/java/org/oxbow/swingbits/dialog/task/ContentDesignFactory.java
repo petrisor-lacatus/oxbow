@@ -34,6 +34,7 @@ package org.oxbow.swingbits.dialog.task;
 import org.oxbow.swingbits.dialog.task.design.DefaultContentDesign;
 import org.oxbow.swingbits.dialog.task.design.LinuxContentDesign;
 import org.oxbow.swingbits.dialog.task.design.MacOsContentDesign;
+import org.oxbow.swingbits.dialog.task.design.WindowsContentDesign;
 import org.oxbow.swingbits.util.OperatingSystem;
 
 public class ContentDesignFactory {
@@ -43,8 +44,9 @@ public class ContentDesignFactory {
 	public static final IContentDesign getDesignByOperatingSystem() {
 
 		switch( OperatingSystem.getCurrent() ) {
-			case MACOS: return new MacOsContentDesign();
-			case LINUX: return new LinuxContentDesign();
+			case MACOS  : return new MacOsContentDesign();
+			case LINUX  : return new LinuxContentDesign();
+			case WINDOWS: return new WindowsContentDesign();
 			default   : return new DefaultContentDesign();
 		}
 		

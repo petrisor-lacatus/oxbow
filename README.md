@@ -1,7 +1,15 @@
-**SwingBits** library is a collection of useful Swing components and utilities.   
-Please note that TaskDialog library is now a part of SwingBits
+[![](https://drone.io/eugener/swingbits/status.png)](https://drone.io/eugener/swingbits/latest)
 
-The documentation can be found in the [Wiki](https://github.com/eugener/oxbow/wiki)
+**SwingBits** is a collection of useful components and utilities for Java Swing Toolkit. 
+
+
+
+The documentation can be found in the [Project Wiki](https://github.com/eugener/oxbow/wiki/Table-Filtering).     
+Latest releases are available in the [Downloads](https://github.com/eugener/oxbow/downloads) 
+
+```
+ NOTE: The TaskDialog library is becoming a part of SwingBits starting with SwingBits v1.0 
+```
 
 Here are some of its features:
    
@@ -11,8 +19,12 @@ Here are some of its features:
 
 #### Task Dialogs    
 
-![Task Dialog 2](http://mcoj.files.wordpress.com/2010/02/taskdialog-nimbus.jpg?w=450)
-![Task Dialog 1](http://mcoj.files.wordpress.com/2010/02/taskdialog-footer.jpg?w=450)
-![Task Dialog 5](http://mcoj.files.wordpress.com/2010/04/taskdialog-commandlinkwin1.jpg?w=450)
+![Nimbus LAF Task Dialog](http://mcoj.files.wordpress.com/2012/07/nimbuslaf-taskdialog.png)
+
+![Windows LAF Task Dialog](http://mcoj.files.wordpress.com/2012/07/windowslaf-taskdialog.png)
+
 ![Task Dialog 3](http://mcoj.files.wordpress.com/2010/03/taskdialog-mac2.png?w=450)
-![Task Dialog 4](http://mcoj.files.wordpress.com/2010/03/taskdialog-showexception.jpg?w=450)
+
+![Task Dialog 5](http://mcoj.files.wordpress.com/2012/07/winchoicedlg.png)
+
+![Windows LAF Exception Dialog](http://mcoj.files.wordpress.com/2012/07/windows-laf-exception-dialog.png)

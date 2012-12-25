@@ -32,9 +32,12 @@
 package org.oxbow.swingbits.dialog.task;
 
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.swing.DefaultComboBoxModel;
@@ -55,6 +58,7 @@ public class TaskDialogsDemo extends JPanel {
 	private final JButton btInform = new JButton("inform");
 	private final JButton btWarn = new JButton("warn");
 	private final JButton btRadioChoice = new JButton("radioChoice");
+	private final JButton btCheckChoice = new JButton("checkChoice");
 	private final JButton btChoice = new JButton("choice");
 	private final JButton btException = new JButton("showException");
 	private final JButton btSimple = new JButton("simple message");
@@ -119,7 +123,7 @@ public class TaskDialogsDemo extends JPanel {
 
 		btSimple.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TaskDialog dlg = new TaskDialog(null, "Task Dialog");
+				TaskDialog dlg = new TaskDialog(getParentWindow(), "Task Dialog");
 				dlg.setInstruction("This Simple Task Dialog");
 				dlg.setText("Here is task dialog content");
 				dlg.show();
@@ -130,7 +134,7 @@ public class TaskDialogsDemo extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TaskDialogs.inform( null, "You've won!", "The game is over with the 15:3 score");
+				TaskDialogs.inform( getParentWindow(), "You've won!", "The game is over with the 15:3 score");
 			}
 		});
 		
@@ -138,7 +142,7 @@ public class TaskDialogsDemo extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println( "Your input: " + TaskDialogs.input( null, "Enter your name", "or any other text if you prefer", "Steve Jobs" ));
+				System.out.println( "Your input: " + TaskDialogs.input( getParentWindow(), "Enter your name", "or any other text if you prefer", "Steve Jobs" ));
 			}
 		});
 
@@ -146,7 +150,7 @@ public class TaskDialogsDemo extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TaskDialogs.isConfirmed( null, "Are you sure you want to quit?", "Please do not quit yet!");
+				TaskDialogs.isConfirmed( getParentWindow(), "Are you sure you want to quit?", "Please do not quit yet!");
 			}
 		});
 
@@ -155,17 +159,27 @@ public class TaskDialogsDemo extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int choice = TaskDialogs.radioChoice( null, "You've got selection to make", "Go ahead", 1, "Yes", "No", "May be" );
+				int choice = TaskDialogs.radioChoice( getParentWindow(), "You've got selection to make", "Go ahead", 1, "Yes", "No", "May be" );
 				System.out.println("Your choice is " + choice );
 			}
 		});
 
+		btCheckChoice.addActionListener( new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Collection<String> result =  TaskDialogs.build( getParentWindow(), "You've got selection to make", "Go ahead" ).
+				                                checkChoice( Arrays.asList("Yes", "No", "May be"), Arrays.asList("No") );
+				System.out.println("Your choice is " + result );
+			}
+		});
+		
 		btChoice.addActionListener( new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				int choice =  TaskDialogs.build(null, "What do you want to do with your game in\nprogress?", "").
+				int choice =  TaskDialogs.build(getParentWindow(), "What do you want to do with your game in\nprogress?", "").
 						      //icon( TaskDialog.StandardIcon.ERROR ).
 						      choice( 1, 
 								new CommandLink("Exit and save my game", "Save your game in progress, then exit. " +
@@ -197,6 +211,10 @@ public class TaskDialogsDemo extends JPanel {
 
 	}
 
+	private Window getParentWindow() {
+		return SwingUtilities.getWindowAncestor(this);
+	}
+	
 	private void createLayout() {
 		setLayout(new MigLayout("", "[][135px]15px[135px]15px[135px,grow]", "[pref!][20px][23px][23px][]"));
 		
@@ -208,7 +226,8 @@ public class TaskDialogsDemo extends JPanel {
 		add(btInform, "cell 1 3,growx,aligny top");
 		add(btWarn, "cell 1 4,growx,aligny top");
 		add(btRadioChoice, "cell 2 2,growx,aligny top");
-		add(btChoice, "cell 2 3,growx,aligny top");
+		add(btCheckChoice, "cell 2 3,growx,aligny top");
+		add(btChoice, "cell 2 4,growx,aligny top");
 		add(btException, "cell 3 2,growx,aligny top");
 		add(btInput, "cell 3 3,growx,aligny top");
 		

@@ -213,7 +213,7 @@ public class TaskDialog extends SwingBean {
 		HELP("help", KS_F1, false ),            // Help button that is normally on the right
 		HELP2("help2", "Help", KS_F1, false),   // Help button that on some platforms are placed on the left
 		YES("yes", KS_ENTER, true, true),       // Yes button
-		NO("yes", KS_ESCAPE, true),             // No button
+		NO("no", KS_ESCAPE, true),             // No button
 		APPLY("apply"),                         // Apply button
 		NEXT("next", true, false),              // Next or Forward Button
 		BACK("back"),                           // Previous or Back Button
@@ -615,9 +615,10 @@ public class TaskDialog extends SwingBean {
 
 				// location is set relative to currently active window or dialog owner if no active window found
 				// this way task dialog stays on the same monitor as it's owner
-				Window window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
-				if ( window == null || !window.isDisplayable() ) {
-					window = dlg.getOwner();
+				Window window = dlg.getOwner();
+				if ( window == null ) {
+					window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+					if (!window.isDisplayable()) window = null;		
 				}
 				dlg.setLocationRelativeTo( window );
 				dlg.setVisible(true);
@@ -803,6 +804,14 @@ public class TaskDialog extends SwingBean {
 		return text.startsWith(I18N_PREFIX)? getLocalizedString(text.substring(I18N_PREFIX.length())) : text;
 	}
 
+	
+	public Object getClientProperty( Object key ) {
+		return dlg.getRootPane().getClientProperty(key);
+	}
+	
+	public void putClientProperty( Object key, Object value ) {
+		dlg.getRootPane().putClientProperty(key, value);
+	}
 
 	/**
 	 * Shows or hides this {@code Dialog} depending on the value of parameter
@@ -828,6 +837,7 @@ public class TaskDialog extends SwingBean {
 	public void setResult( Command result ) {
 		this.result.set(result);
 	}
+	
 
 	/**
 	 * Shows the dialog

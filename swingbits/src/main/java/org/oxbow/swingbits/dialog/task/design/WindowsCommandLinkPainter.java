@@ -29,30 +29,37 @@
  *
  */
 
+package org.oxbow.swingbits.dialog.task.design;
 
-package org.oxbow.swingbits.util;
+import java.awt.Color;
 
-public class Preconditions {
+public class WindowsCommandLinkPainter extends DefaultCommandLinkPainter {
 
-	private Preconditions(){}
+	private LinkChrome selectedChrome = new LinkChrome(
+				new Color(0xFBFBFC),
+				new Color(0xE6E6E6),
+				new Color(0xDADADA),
+				1, 7 );
 	
-	public static void checkArgument(boolean expression) {
-	    if (!expression) throw new IllegalArgumentException();
-    }
+	private LinkChrome armedChrome = new LinkChrome(
+			    new Color(0xFCFDFF),
+			    new Color(0xEDF5FF),
+			    new Color(0xB9D7FC),
+				1, 7 );
 	
-	public static void checkArgument(boolean expression, String message ) {
-	    if (!expression) throw new IllegalArgumentException( String.valueOf(message));
-    }
+	private LinkChrome rolloverChrome = new LinkChrome(
+		    new Color(0xFCFDFF),
+		    new Color(0xEDF5FF),
+		    new Color(0xB9D7FC),
+			1, 7 );
 	
-	public static <T> T checkNotNull(T ref) {
-		if (ref == null) throw new NullPointerException();
-		return ref;
+	protected LinkChrome getLinkChrome( LinkState linkState ) {
+		switch( linkState ) {
+			case SELECTED: return selectedChrome;
+			case ARMED   : return armedChrome; 
+			case ROLLOVER: return rolloverChrome;
+			default      : return selectedChrome;
+		}
 	}
 
-	public static <T> T checkNotNull(T ref, String message ) {
-		if (ref == null) throw new NullPointerException(String.valueOf(message));
-		return ref;
-	}
-	
-	
 }

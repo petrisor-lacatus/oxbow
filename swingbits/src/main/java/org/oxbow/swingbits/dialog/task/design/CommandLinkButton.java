@@ -31,13 +31,13 @@
 
 package org.oxbow.swingbits.dialog.task.design;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
@@ -52,8 +52,10 @@ import org.oxbow.swingbits.util.Markup;
 
 
 public class CommandLinkButton extends JToggleButton {
-
+	
 	private static final long serialVersionUID = 1L;
+	private static final Insets buttonInsets = new Insets(7, 7, 7, 15);
+	
 	private final CommandLink link;
 	private final ICommandLinkPainter painter;
 
@@ -72,10 +74,26 @@ public class CommandLinkButton extends JToggleButton {
 		setIcon( icon == null? UIManager.getIcon( IContentDesign.ICON_COMMAND_LINK ): icon );
 		setText(buildText());
 		
-		setMargin( new Insets(7, 7, 7, 7));
+		setMargin( buttonInsets );
 		
-		if ( painter != null ) painter.intialize(this);
+		if ( painter != null ) painter.prepareSource(this);
 
+		addFocusListener(new FocusAdapter() {
+
+	        @Override
+	        public void focusGained(FocusEvent e) {
+	            setSelected(true);
+	        }
+
+	        @Override
+	        public void focusLost(FocusEvent e) {
+	            // NOTE: if we really are de-selected is controlled by the
+	        	// ButtonGroup.
+	            setSelected(false);
+	        }
+
+	    });
+		
 		addActionListener( new ActionListener() {
 
 			@Override
@@ -83,7 +101,8 @@ public class CommandLinkButton extends JToggleButton {
 
 				TaskDialog dlg = TaskDialog.getInstance((Component) e.getSource());
 				if ( dlg != null ) {
-					dlg.setResult( TaskDialog.StandardCommand.OK);
+					dlg.setResult(CommandLinkButton.this.link);
+					//dlg.setResult( TaskDialog.StandardCommand.OK );
 					dlg.setVisible(false);
 				}
 
@@ -92,24 +111,29 @@ public class CommandLinkButton extends JToggleButton {
 		});
 
 	}
-
+	
 	private String buildText() {
 
-		Font fontInstr = UIManager.getFont( IContentDesign.FONT_INSTRUCTION );
-		Font fontText  = UIManager.getFont( IContentDesign.FONT_TEXT );
-		Color colorInstr = UIManager.getColor( IContentDesign.COLOR_INSTRUCTION_FOREGROUND);
-
-		StringBuffer txt = new StringBuffer();
-		txt.append( "<html><head><style type='text/css'>" );
-		txt.append(	"p { " + Markup.toCSS(fontInstr) +	Markup.toCSS(colorInstr) + " };" );
+		String txt = 
+			"<html><head>" +
+			  "<style type='text/css'>" +
+			    "p.tdi { %s%s }" +
+			    "p.tdt { %s%s }" +
+			  "</style>" +
+			"</head>" +
+			  "<p class=\"tdi\">%s</p>" +
+			  "<p class=\"tdt\">%s</p>" +
+			"</html>";
 		
-		txt.append( String.format( "div { " + Markup.toSizeCSS(fontText) +" }" ));
-		txt.append( "</style></head>" );
-		txt.append( "<p>" + Markup.toHTML( link.getInstruction(), false )  + "</p>" );
-		txt.append( "<div>" + Markup.toHTML( link.getText(), false ) + "</div>");
-		txt.append( "</html>" );
-
-		return txt.toString();
+		String instrColorCss = Markup.toCSS(UIManager.getColor( IContentDesign.COLOR_INSTRUCTION_FOREGROUND ));
+		
+		return String.format(txt,
+				Markup.toCSS(UIManager.getFont( IContentDesign.FONT_INSTRUCTION )),
+				instrColorCss,
+				Markup.toCSS(UIManager.getFont( IContentDesign.FONT_TEXT )),
+				instrColorCss,
+				Markup.toHTML( link.getInstruction(), false ),
+				Markup.toHTML( link.getText(), false ) );
 
 	}
 

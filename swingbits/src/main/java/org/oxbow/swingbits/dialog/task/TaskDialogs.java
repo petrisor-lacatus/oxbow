@@ -31,18 +31,19 @@
 
 package org.oxbow.swingbits.dialog.task;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
 import javax.swing.Icon;
 import javax.swing.JFormattedTextField;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -54,6 +55,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.oxbow.swingbits.dialog.task.TaskDialog.StandardCommand;
 import org.oxbow.swingbits.dialog.task.design.CommandLinkButton;
+import org.oxbow.swingbits.dialog.task.design.CommandLinkButtonGroup;
+import org.oxbow.swingbits.list.CheckList;
 import org.oxbow.swingbits.util.Strings;
 import org.oxbow.swingbits.util.swing.AncestorAdapter;
 
@@ -316,6 +319,41 @@ public final class TaskDialogs {
 			return radioChoice( defaultChoice, Arrays.asList(choices));
 		}
 
+		/**
+		 * Simplifies the presentation of choice based on check boxes
+		 * Check boxes are wrapped into a scrollable check list if there are more than 7 of them
+		 * @param choices All available choices presented
+		 * @param defaultSelection choices checked by default 
+		 * @return collection of checked choices
+		 */
+		public <T> Collection<T> checkChoice( List<T> choices, Collection<T> defaultSelection ) {
+
+			TaskDialog dlg = questionDialog( parent, getTitle( TaskDialog.makeKey("Choice")), null, instruction, text);
+			
+            JList list = new JList();
+            CheckList<T> checkList = new CheckList.Builder(list).build();
+			checkList.setData(choices);
+			checkList.setCheckedItems(defaultSelection);
+			
+			dlg.setIcon( getIcon(TaskDialog.StandardIcon.QUESTION));
+			if ( choices.size() > 7 ) {
+				dlg.setFixedComponent( new JScrollPane(list));	
+			} else {
+				// blend list color with dialog
+				Color listColor = UIManager.getColor(IContentDesign.COLOR_MESSAGE_BACKGROUND);
+				list.setBackground(listColor);
+				list.setSelectionBackground(listColor);
+				list.setSelectionForeground( list.getForeground());
+				dlg.setFixedComponent(list);	
+			}
+
+			TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
+	        dlg.setCommands( StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval()),
+	        		         StandardCommand.CANCEL );
+
+			return dlg.show().equals(StandardCommand.OK)? checkList.getCheckedItems() : null;
+
+		}
 
 		/**
 		 * Simplifies the presentation of choice based on command links
@@ -335,27 +373,20 @@ public final class TaskDialogs {
 					text);
 			
 			dlg.setCommands( StandardCommand.CANCEL );
-
-			final ButtonGroup bGroup = new ButtonGroup();
-		    List<ButtonModel> models = new ArrayList<ButtonModel>();
+			final CommandLinkButtonGroup bGroup = new CommandLinkButtonGroup();
+			
+		    final List<ButtonModel> models = new ArrayList<ButtonModel>();
 		    final List<CommandLinkButton> buttons = new ArrayList<CommandLinkButton>();
 
 		    CommandLinkButton btn;
 			JPanel p = new JPanel( new MigLayout(""));
+			p.setOpaque(false);
 			for( CommandLink link: choices ) {
-				btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter());
+				btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter() );
 				models.add( btn.getModel());
 				buttons.add( btn );
 				bGroup.add(btn);
-				p.add( btn, "dock north");
-				btn.addFocusListener( new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-						bGroup.setSelected( ((CommandLinkButton)e.getSource()).getModel() , true);
-					}
-				});
-
+				p.add( btn, "dock north, gapbottom 8");
 			}
 
 			if ( defaultChoice >= 0 && defaultChoice < choices.size()) {
@@ -371,14 +402,9 @@ public final class TaskDialogs {
 
 				});
 			}
-			p.setOpaque(false);
 
-
-//			dlg.setIcon( );//TaskDialog.StandardIcon.QUESTION));
 			dlg.setFixedComponent(p);
-//			dlg.setCommandsVisible(false);
-
-			return dlg.show().equals(StandardCommand.CANCEL)?  -1: models.indexOf( bGroup.getSelection());
+			return choices.indexOf( dlg.show() );
 
 		}
 
@@ -434,11 +460,12 @@ public final class TaskDialogs {
 	 * @return
 	 */
 	public static TaskDialogBuilder build( Window parent, String instruction, String text) {
-		TaskDialogBuilder builder = new TaskDialogBuilder();
-		builder.parent( parent );
-		builder.instruction(instruction);
-		builder.text(text);
-		return builder;
+//		TaskDialogBuilder builder = new TaskDialogBuilder();
+//		builder.parent( parent );
+//		builder.instruction(instruction);
+//		builder.text(text);
+//		return builder;
+		return build().parent(parent).instruction(instruction).text(text);
 	}
 
 	/**
