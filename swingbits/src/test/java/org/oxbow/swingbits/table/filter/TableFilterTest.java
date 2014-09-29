@@ -32,18 +32,12 @@
 
 package org.oxbow.swingbits.table.filter;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 
 public class TableFilterTest implements Runnable {
@@ -82,6 +76,7 @@ public class TableFilterTest implements Runnable {
     
     private JTable buildTable() {
         JTable table = TableRowFilterSupport.forTable(new JTable()).actions(true).searchable(true).useTableRenderers(true).apply();
+        //JTable table = new JTable();
         table.setModel( new DefaultTableModel(data, colNames) );
         table.getColumnModel().getColumn(0).setCellRenderer(new TestRenderer());
         return table;
@@ -89,7 +84,7 @@ public class TableFilterTest implements Runnable {
     
     private static final int ITEM_COUNT = 2000;
 
-    public static Object[] colNames = { "A123", "B123", "C123" };
+    public static Object[] colNames = { "A123\nte", "B123\nte", "C123" };
 
     public static Object[][] sample = {
 
@@ -106,9 +101,7 @@ public class TableFilterTest implements Runnable {
     static {
 
         for( int i = 0; i<ITEM_COUNT; i+=sample.length ) {
-            for( int j = 0; j<sample.length; j+=1 ) {
-                data[i+j] = sample[j];
-            }
+            System.arraycopy(sample, 0, data, i, sample.length);
         }
 
     }
@@ -127,6 +120,58 @@ public class TableFilterTest implements Runnable {
         }
         
     }
-    
-    
+
+
+    class MultiLineHeaderRenderer extends JPanel implements TableCellRenderer {
+
+        private final JList<String> lineList = new JList<String>();
+        private final JLabel iconLabel = new JLabel(" ");
+        private final boolean autoWrap;
+
+        public MultiLineHeaderRenderer(boolean autoWrap) {
+            super(new BorderLayout());
+            this.autoWrap = autoWrap;
+
+            this.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+
+            lineList.setBackground(UIManager.getColor("TableHeader.background"));
+            iconLabel.setBackground(UIManager.getColor("TableHeader.background"));
+
+            final JLabel renderer = (JLabel) lineList.getCellRenderer();
+            renderer.setHorizontalAlignment(JLabel.CENTER);
+            lineList.setFont(lineList.getFont().deriveFont(Font.PLAIN));
+
+            add(lineList, BorderLayout.CENTER);
+            add(iconLabel, BorderLayout.EAST);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
+            String str = value.toString();
+
+            if (table.getRowSorter() != null) {
+                handleSortingIcons(table, column);
+            }
+
+            String[] lines = str.split("\n");
+            lineList.setListData(lines);
+            return this;
+        }
+
+        private void handleSortingIcons(JTable table, int column) {
+            iconLabel.setIcon(null);
+            Icon ascIcon = UIManager.getIcon("Table.ascendingSortIcon");
+            Icon descIcon = UIManager.getIcon("Table.descendingSortIcon");
+            java.util.List<? extends RowSorter.SortKey> sortKeys =
+                    table.getRowSorter().getSortKeys();
+            for (RowSorter.SortKey sortKey : sortKeys) {
+                if (sortKey.getColumn() == table.convertColumnIndexToModel(column)) {
+                    SortOrder o = sortKey.getSortOrder();
+                    iconLabel.setIcon(o == SortOrder.ASCENDING ? ascIcon : descIcon);
+                    break;
+                }
+            }
+        }
+    }
 }
